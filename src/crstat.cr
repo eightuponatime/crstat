@@ -1,6 +1,17 @@
-# TODO: Write documentation for `Crstat`
-module Crstat
-  VERSION = "0.1.0"
+#!/usr/bin/env crystal
 
-  # TODO: Put your code here
+require "admiral"
+require "./crstat/*"
+
+class CrStatCLI < Admiral::Command
+  include CrStat
+  define_version VERSION
+  define_help description: "fetching system info"
+
+  def run
+    puts "Welcome to CRSTAT v#{CrStat::VERSION}"
+    help
+  end
 end
+
+CrStatCLI.run
