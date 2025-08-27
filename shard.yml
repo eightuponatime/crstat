@@ -1,0 +1,13 @@
+name: crstat
+version: 0.1.0
+
+authors:
+  - maxim satanov <satanov201354@gmail.com>
+
+targets:
+  crstat:
+    main: src/crstat.cr
+
+crystal: '>= 1.17.0'
+
+license: MIT
