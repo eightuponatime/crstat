@@ -1,22 +1,19 @@
-require "./fetchers/temperature_fetcher"
+require "./fetchers/*"
 require "./entities/cpu_info"
 
 module CrStat::Cpu
   class CpuFetcher
-    include CrStat::Cpu::Fetchers::TemperatureFetcher
+    include CrStat::Cpu::Fetchers
     include CrStat::Cpu::Entities
 
-    @temperature : String? = nil
-
-    def initialize(
-      @temperature : String? = nil,
-    )
-    end
-
     def fetch
-      @temperature = fetch_temperature()
+      temperature = fetch_temperature()
+      model_name = fetch_params()
 
-      cpu_info = CpuInfo.new(temperature: @temperature)
+      cpu_info = CpuInfo.new(
+        temperature: temperature,
+        model_name: model_name
+      )
 
       cpu_info
     end
