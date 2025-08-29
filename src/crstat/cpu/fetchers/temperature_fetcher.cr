@@ -1,4 +1,4 @@
-module CrStat::Cpu::Fetchers::TemperatureFetcher
+module CrStat::Cpu::Fetchers
   def fetch_temperature
     temp_file : String = "/sys/class/thermal/thermal_zone0/temp"
     content = File.read(temp_file)
