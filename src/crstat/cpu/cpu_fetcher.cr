@@ -7,12 +7,14 @@ module CrStat::Cpu
     include CrStat::Cpu::Entities
 
     def fetch
-      temperature = fetch_temperature()
-      model_name = fetch_params()
+      temperature : String = fetch_temperature()
+      model_name : String = fetch_params()
+      cpu_threads_usage : Array(Float64) = fetch_cpu_usage()
 
       cpu_info = CpuInfo.new(
         temperature: temperature,
-        model_name: model_name
+        model_name: model_name,
+        cpu_threads_usage: cpu_threads_usage
       )
 
       cpu_info

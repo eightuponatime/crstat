@@ -1,5 +1,5 @@
 module CrStat::Cpu::Fetchers
-  def fetch_params
+  def fetch_params : String
     model_name : String = ""
 
     path = "/proc/cpuinfo"
