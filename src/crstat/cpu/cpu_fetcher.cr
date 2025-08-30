@@ -9,7 +9,7 @@ module CrStat::Cpu
     def fetch
       temperature : String = fetch_temperature()
       model_name : String = fetch_params()
-      cpu_threads_usage : Array(Float64) = fetch_cpu_usage()
+      cpu_threads_usage : Array(CpuUsageModel) = fetch_cpu_usage()
 
       cpu_info = CpuInfo.new(
         temperature: temperature,

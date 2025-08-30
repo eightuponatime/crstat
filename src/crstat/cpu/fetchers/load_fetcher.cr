@@ -4,15 +4,15 @@ module CrStat::Cpu::Fetchers
   include CrStat::Cpu::Entities
 
   # get the array of % values of cpu usage for each CPU thread
-  def fetch_cpu_usage : Array(Float64)
+  def fetch_cpu_usage : Array(CpuUsageModel)
     # /proc/stat stores values that are cumulative time values
     # since the kernel start.
     # that's why here finding values with a gap of 1 second to subtract values
     # and only than we can find out the core load, because reading one file
     # give us only the time counter
-    earlyData : Array(CpuLoadModel) = get_load_data
+    earlyData : Array(ThreadLoadModel) = get_load_data
     sleep 1.seconds
-    latestData : Array(CpuLoadModel) = get_load_data
+    latestData : Array(ThreadLoadModel) = get_load_data
 
     cores_deltas = get_deltas(earlyData: earlyData, latestData: latestData)
     usage = get_threads_usage(cores_deltas: cores_deltas)
@@ -20,15 +20,15 @@ module CrStat::Cpu::Fetchers
     usage
   end
 
-  def get_load_data : Array(CpuLoadModel)
+  def get_load_data : Array(ThreadLoadModel)
     path = "/proc/stat"
 
-    data = [] of CpuLoadModel
+    data = [] of ThreadLoadModel
 
     File.each_line(filename: path) do |line|
       words = line.split
       if /cpu/.match(words[0])
-        data << CpuLoadModel.new(
+        data << ThreadLoadModel.new(
           user: words[1].to_i64,
           nice: words[2].to_i64,
           system: words[3].to_i64,
@@ -47,9 +47,9 @@ module CrStat::Cpu::Fetchers
   end
 
   def get_deltas(
-    earlyData : Array(CpuLoadModel),
-    latestData : Array(CpuLoadModel),
-  ) : Array(CpuLoadModel)
+    earlyData : Array(ThreadLoadModel),
+    latestData : Array(ThreadLoadModel),
+  ) : Array(ThreadLoadModel)
     zipped = earlyData.zip(latestData).map { |early, latest|
       get_each_load_values_deltas(a: early, b: latest)
     }
@@ -58,9 +58,9 @@ module CrStat::Cpu::Fetchers
   end
 
   def get_each_load_values_deltas(
-    a : CpuLoadModel, b : CpuLoadModel,
-  ) : CpuLoadModel
-    deltas = CpuLoadModel.new(
+    a : ThreadLoadModel, b : ThreadLoadModel,
+  ) : ThreadLoadModel
+    deltas = ThreadLoadModel.new(
       user: b.user - a.user,
       nice: b.nice - a.nice,
       system: b.system - a.system,
@@ -76,7 +76,7 @@ module CrStat::Cpu::Fetchers
     deltas
   end
 
-  def get_threads_usage(cores_deltas : Array(CpuLoadModel)) : Array(Float64)
+  def get_threads_usage(cores_deltas : Array(ThreadLoadModel)) : Array(CpuUsageModel)
     cores_load = cores_deltas.map do |deltas|
       total = deltas.user +
               deltas.nice +
@@ -91,7 +91,21 @@ module CrStat::Cpu::Fetchers
 
       idle = deltas.idle + deltas.iowait
 
-      usage = (100 * (total - idle) / total).round(2)
+      total_usage = (100 * (total - idle) / total).round(2)
+
+      cpu_prc_usage = CpuUsageModel.new(
+        total_pct: total_usage,
+        user_pct: (100 * deltas.user / total).round(2),
+        nice_pct: (100 * deltas.nice / total).round(2),
+        system_pct: (100 * deltas.system / total).round(2),
+        idle_pct: (100 * idle / total).round(2),
+        iowait_pct: (100 * deltas.iowait / total).round(2),
+        irq_pct: (100 * deltas.irq / total).round(2),
+        softirq_pct: (100 * deltas.softirq / total).round(2),
+        steal_pct: (100 * (deltas.steal || 0) / total).round(2),
+        guest_pct: (100 * (deltas.guest || 0) / total).round(2),
+        guest_nice_pct: (100 * (deltas.guest_nice || 0) / total).round(2)
+      )
     end
 
     cores_load

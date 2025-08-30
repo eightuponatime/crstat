@@ -1,9 +1,9 @@
 module CrStat::Cpu::Entities
-  # CpuLoadModel is a CPU time breakdown model.
-  # A model to store the amount of time the CPU has spent from
+  # ThreadLoadModel is a CPU time breakdown model.
+  # A model to store the amount of time the CPU thread has spent from
   # performing different kinds of work since the kernel start
   # from file /proc/stat
-  struct CpuLoadModel
+  struct ThreadLoadModel
     getter user : Int64,
       nice : Int64,
       system : Int64,
