@@ -14,8 +14,8 @@ class CrStatCLI < Admiral::Command
 
   def crstat_smi
     loop do
-      print "\033[2J\033[H"
       cpu_info = CpuFetcher.new.fetch
+      print "\033[2J\033[H"
       puts "==================== CRSTAT-SMI ===================="
       puts "CPU Model: #{cpu_info.model_name}"
       puts "Temperature: #{cpu_info.temperature}"
