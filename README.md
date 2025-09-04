@@ -22,6 +22,16 @@ TODO: Write development instructions here
 4. Push to the branch (`git push origin my-new-feature`)
 5. Create a new Pull Request
 
+## TODO
+
+### CPU
+- [x] Calculate CPU thread load from `/proc/stat`
+- [x] Get CPU model name from `/proc/cpuinfo`
+- [x] Get CPU temperature from `/sys/class/thermal/thermal_zone0/temp`
+
+### Memory
+- [ ] Get memory and swap information from `/proc/meminfo`
+
 ## Contributors
 
 - [maxim satanov](https://github.com/your-github-user) - creator and maintainer
