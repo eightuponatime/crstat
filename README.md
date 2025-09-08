@@ -30,7 +30,9 @@ TODO: Write development instructions here
 - [x] Get CPU temperature from `/sys/class/thermal/thermal_zone0/temp`
 
 ### Memory
-- [ ] Get memory and swap information from `/proc/meminfo`
+- [x] Get memory and swap information from `/proc/meminfo`
+- [x] Collect information about user's real disks (excluding loop devices, squashfs, and vfat) from /proc/self/mountinfo, including filesystem name and mount point
+- [ ] Retrieve disk usage statistics (total, used, available space) using statvfs with LibC
 
 ## Contributors
 
