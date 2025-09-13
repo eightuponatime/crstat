@@ -1,3 +1,3 @@
 #!/bin/bash
 
-./src/crstat.cr
+./src/main.cr

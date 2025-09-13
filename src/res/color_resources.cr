@@ -1,4 +1,5 @@
 module Resources::Color
+  # cpu smi color resources
   RESET          = "\e[0m"
   USER_CLR       = "\e[38;2;173;216;230m" # #add8e6
   NICE_CLR       = "\e[38;5;33m"          # #0066ff
