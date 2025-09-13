@@ -1,5 +1,3 @@
-#!/usr/bin/env crystal
-
 require "../entities/*"
 
 module CrStat::Mem::Fetchers
@@ -30,24 +28,26 @@ module CrStat::Mem::Fetchers
     filesystems = fetch_filesystem
     result = [] of FilesystemModel
     filesystems.each do |fs_name, mount_point|
-      puts "block --> #{fs_name}"
       stat = LibC::StatVfs.new
 
-      if LibC.statvfs(fs_name, pointerof(stat)) == 0
-        puts "block size --> #{stat.f_bsize}"
-        puts "blocks amount --> #{stat.f_blocks}"
-        puts "free blocks --> #{stat.f_bfree}"
-        puts "available blocks --> #{stat.f_bavail}"
-        puts "file name max length #{stat.f_namemax}"
+      if LibC.statvfs(mount_point, pointerof(stat)) == 0
+        total = stat.f_blocks * stat.f_frsize / 1024
+        used = (stat.f_blocks - stat.f_bfree) * stat.f_frsize / 1024
+        available = stat.f_bavail * stat.f_frsize / 1024
+        usage_pct = total > 0 ? (used.to_f / total * 100).round(2) : 0.0
+
+        result << FilesystemModel.new(
+          filesystem: fs_name,
+          size: total,
+          used: used,
+          available: available,
+          usage_pct: usage_pct,
+          mount_point: mount_point
+        )
       else
         puts "statvfs error: #{Errno.value}"
       end
     end
+    result
   end
 end
-
-class Runner
-  include CrStat::Mem::Fetchers
-end
-
-runner = Runner.new.fetch_filesystem_info
